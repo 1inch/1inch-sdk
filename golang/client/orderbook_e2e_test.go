@@ -97,6 +97,54 @@ func TestCreateOrderE2E(t *testing.T) {
 			},
 		},
 		{
+			description: "Ethereum - Create limit order offering 1 HOP for 1 USDC",
+			config: Config{
+				DevPortalApiKey: os.Getenv("DEV_PORTAL_TOKEN"),
+				Web3HttpProviders: []Web3ProviderConfig{
+					{
+						ChainId: chains.Ethereum,
+						Url:     os.Getenv("WEB_3_HTTP_PROVIDER_URL_WITH_KEY"),
+					},
+				},
+			},
+			createOrderParams: orderbook.CreateOrderParams{
+				ChainId:      chains.Ethereum,
+				PrivateKey:   os.Getenv("WALLET_KEY_EMPTY"),
+				Maker:        os.Getenv("WALLET_ADDRESS_EMPTY"),
+				MakerAsset:   tokens.EthereumHop,
+				TakerAsset:   tokens.EthereumUsdc,
+				MakingAmount: "1000000000000000000",
+				TakingAmount: "1000000000",
+				Taker:        addresses.Zero,
+				SkipWarnings: true,
+				ApprovalType: onchain.PermitAlways,
+			},
+		},
+		{
+			description: "Polygon - Create limit order offering 1 USDC for 1 FRAX - Approval",
+			config: Config{
+				DevPortalApiKey: os.Getenv("DEV_PORTAL_TOKEN"),
+				Web3HttpProviders: []Web3ProviderConfig{
+					{
+						ChainId: chains.Polygon,
+						Url:     os.Getenv("WEB_3_HTTP_PROVIDER_URL_WITH_KEY_POLYGON"),
+					},
+				},
+			},
+			createOrderParams: orderbook.CreateOrderParams{
+				ChainId:      chains.Polygon,
+				PrivateKey:   os.Getenv("WALLET_KEY_EMPTY"),
+				Maker:        os.Getenv("WALLET_ADDRESS_EMPTY"),
+				MakerAsset:   tokens.PolygonUsdc,
+				TakerAsset:   tokens.PolygonFrax,
+				MakingAmount: "1000000",
+				TakingAmount: "1000000000000000000",
+				Taker:        addresses.Zero,
+				SkipWarnings: true,
+				ApprovalType: onchain.ApprovalAlways,
+			},
+		},
+		{
 			description: "BSC - Create limit order offering 1 USDC for 1 DAI",
 			config: Config{
 				DevPortalApiKey: os.Getenv("DEV_PORTAL_TOKEN"),

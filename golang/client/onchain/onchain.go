@@ -439,7 +439,7 @@ func GetTimeSeriesManagerNonce(client *ethclient.Client, seriesNonceManager stri
 	// Query the blockchain
 	result, err := client.CallContract(context.Background(), msg, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve the PERMIT_TYPEHASH: %v", err)
+		return nil, fmt.Errorf("failed to retrieve the nonce: %v", err)
 	}
 
 	// Unpack the result
