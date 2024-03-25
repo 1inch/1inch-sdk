@@ -6,16 +6,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	helpers2 "github.com/1inch/1inch-sdk-go/internal/helpers"
+	"github.com/1inch/1inch-sdk-go/internal/helpers/consts/addresses"
+	"github.com/1inch/1inch-sdk-go/internal/helpers/consts/contracts"
 	"net/http"
 	"time"
 
 	"github.com/1inch/1inch-sdk-go/client/models"
 	"github.com/1inch/1inch-sdk-go/helpers"
-	"github.com/1inch/1inch-sdk-go/helpers/consts/addresses"
-	"github.com/1inch/1inch-sdk-go/helpers/consts/contracts"
 	"github.com/1inch/1inch-sdk-go/internal/onchain"
 	"github.com/1inch/1inch-sdk-go/internal/orderbook"
-	"github.com/1inch/1inch-sdk-go/internal/tenderly"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
@@ -95,7 +95,7 @@ func (s *OrderbookService) CreateOrder(ctx context.Context, params models.Create
 			return nil, nil, fmt.Errorf("failed to read allowance: %v", err)
 		}
 
-		makingAmountBig, err := helpers.BigIntFromString(params.MakingAmount)
+		makingAmountBig, err := helpers2.BigIntFromString(params.MakingAmount)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to parse making amount: %v", err)
 		}
@@ -115,21 +115,19 @@ func (s *OrderbookService) CreateOrder(ctx context.Context, params models.Create
 				}
 			}
 
-			// Only run the approval if Tenderly data is not present
-			if _, ok = ctx.Value(tenderly.SwapConfigKey).(tenderly.SimulationConfig); !ok {
-				erc20Config := onchain.Erc20ApprovalConfig{
-					ChainId:        params.ChainId,
-					Key:            params.PrivateKey,
-					Erc20Address:   fromTokenAddress,
-					PublicAddress:  publicAddress,
-					SpenderAddress: aggregationRouterAddress,
-				}
-				err := onchain.ApproveTokenForRouter(ctx, ethClient, s.client.NonceCache, erc20Config)
-				if err != nil {
-					return nil, nil, fmt.Errorf("failed to approve token for router: %v", err)
-				}
-				helpers.Sleep()
+			erc20Config := onchain.Erc20ApprovalConfig{
+				ChainId:        params.ChainId,
+				Key:            params.PrivateKey,
+				Erc20Address:   fromTokenAddress,
+				PublicAddress:  publicAddress,
+				SpenderAddress: aggregationRouterAddress,
 			}
+			err := onchain.ApproveTokenForRouter(ctx, ethClient, s.client.NonceCache, erc20Config)
+			if err != nil {
+				return nil, nil, fmt.Errorf("failed to approve token for router: %v", err)
+			}
+			helpers.Sleep()
+
 		}
 	}
 

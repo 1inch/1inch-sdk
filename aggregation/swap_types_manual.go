@@ -1,4 +1,4 @@
-package models
+package aggregation
 
 type ExecuteSwapConfig struct {
 	WalletKey          string
@@ -11,5 +11,4 @@ type ExecuteSwapConfig struct {
 	EstimatedAmountOut string
 	TransactionData    string
 	IsPermitSwap       bool
-	SkipWarnings       bool
 }
